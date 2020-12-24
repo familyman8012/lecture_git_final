@@ -1,0 +1,9 @@
+https://github.com/lvlrSajjad/react-native-blur-overlay
+
+flatlist carousel infinite
+https://www.youtube.com/watch?v=HAgJqaJc-ck
+
+flatlist carousel animate
+
+
+https://swairaq.medium.com/react-native-blur-overlay-1ca75d39baae

@@ -1,0 +1,261 @@
+액션같은것들이 기본적으로 동기, 다 객체.
+dispatch 는 그걸 받아서, dispatch 하는데비동기가 들어갈 데가 없음.
+
+리덕스 - 미들웨어로 유명한게
+redux-thunk
+redux-saga
+
+dispatch 와 reducer 사이에 위치하기때문에 미들웨어.
+
+항상 비동기를 다루기 위해 thunk 나 saga 를 쓰는게 아니라,
+그냥 dispatch 와 reducer 사이에 어떠한 동작이든 사용가능하기에 쓴다.
+
+const store = createStore(reducer, initialState); =>
+const store = createStore(reducer, initialState, enhancer); 
+
+1) 미들웨어 적용
+최상단 const {createStore, applyMiddleware} = require('redux');
+const enhancer = applyMiddleware();
+const store = createStore(reducer, initialState, enhancer);
+
+2)미들웨어랑 데브툴이랑 이것저것 더 넣을때 compose
+const enhancer = compose(
+    applyMiddleware(),
+    devtool
+)
+
+
+그런데 희안한 3단 함수가 들어감.
+const {createStore, applyMiddleware} = require('redux');
+** const enhancer = applyMiddleware(() => () => () => {});
+const store = createStore(reducer, initialState, enhancer);
+
+
+3단 함수.
+function firstMiddleware(store) {
+    ..어쩌구
+    return function(next) {
+        ..저쩌구
+        return function(action) {
+            ..모쩌구
+        }
+    }
+}
+
+근데, 이런 시점 필요없으면
+const firstMiddleware = (store) => (next) => (action) => {
+	console.log(action);
+    next(action)
+}
+
+next 를 dispatch 로 생각하면 된다.
+
+
+const firstMiddleware = (store) => (dispatch) => (action) => {
+console.log(action);
+    dispatch(action)
+}
+
+
+const firstMiddleware = (store) => (next) => (action) => {
+    //기능추가
+    next(action)   //dispatch(action) --> 기본기능
+    //기능추가
+}
+
+
+const enhancer = applyMiddleware(firstMiddleware);
+
+여러개 집어넣어도 됨.
+
+const firstMiddleware = (store) => (next) => (action) => {
+    console.log('액션로깅',action);
+    next(action)
+    console.log('액션끝',action);
+}
+
+const thunkMiddleware = (store) => (dispatch) => (action) => {
+    if (typeof action === 'function') { // 동기면 객체인데, 비동기면 function 을 넣어줄께. 비동기일때 진행.
+        return action(store.dispatch, store.getState)
+    }
+    return dispatch(action) // 리턴은 있어도 되고, 없어도 됨. 동기일때 진행.
+}
+
+
+const enhancer = applyMiddleware(
+    firstMiddleware,
+    thunkMiddleware
+);
+
+actions 폴더 => user.js
+const logIn = (data) => { // async action creator
+    return (dispatch, getState) => {
+        dispatch(logInRequest(data));
+        try {
+            setTimeout(() => {
+                dispatch(logInSuccess({
+                    userId : 1,
+                    nickname : 'zerocho'
+                }));
+            }, 2000)
+        } catch(e) {
+            dispatch(logInFailure(e))
+        }
+    }
+}
+const logInRequest = (data) => {
+    return {
+        type:'LOG_IN_REQUEST',
+        data 
+    }
+}
+
+const logInSuccess = (data) => {
+    return {
+        type:'LOG_IN_SUCCESS',
+        data 
+    }
+}
+
+const logInFailure = (error) => {
+    return {
+        type:'LOG_IN_FAILURE',
+        error 
+    }
+}
+
+
+적용전. 
+const {createStore} = require('redux');
+const reducer = require('./reducer');
+const {addPost} = require('./actions/post');
+const {logIn, logOut} = require('./actions/user');
+/*
+
+const nextState = {
+    ...initialState,
+    posts:[{id:1}]
+}
+
+const nextState = {
+    ...initialState,
+    posts:[...initialState.posts, action.data]
+}
+*/
+const initialState = {
+    user: {
+        isLoggingIn: true,
+        data: null
+    },    
+    posts:[],
+    comments : [],
+    favorites : [],
+    history : [],
+    likes : [],
+    followeres : []
+}
+const store = createStore(reducer, initialState);
+
+
+
+
+// 함수로 변수값 받아서 액션 생성. 크리에이티브 액션.
+console.log('1', store.getState());
+store.dispatch(logIn({
+    id : 1,
+    name:'zerocho',
+    admin : true,
+}));
+console.log('2', store.getState());
+
+store.dispatch(addPost({
+    userId:1,
+    id : 1,
+    content : '안녕허세요. 리덕스'
+}));
+console.log('3', store.getState());
+store.dispatch(addPost({
+    userId:1,
+    id : 2,
+    content : '안녕허세요. 리덕스2'
+}));
+console.log('4', store.getState());
+store.dispatch(logOut())
+console.log('5', store.getState());
+
+// 자기자신안에서만 쓰이는 건, state 쓰고, 부모-자식간까지만 state 쓴다.
+
+
+적용후
+
+const {createStore, applyMiddleware} = require('redux');
+const reducer = require('./reducer');
+const {addPost} = require('./actions/post');
+const {logIn, logOut} = require('./actions/user');
+/*
+
+const nextState = {
+    ...initialState,
+    posts:[{id:1}]
+}
+
+const nextState = {
+    ...initialState,
+    posts:[...initialState.posts, action.data]
+}
+*/
+const initialState = {
+    user: {
+        isLoggingIn: true,
+        data: null
+    },    
+    posts:[],
+    comments : [],
+    favorites : [],
+    history : [],
+    likes : [],
+    followeres : []
+}
+
+const firstMiddleware = (store) => (next) => (action) => {
+    console.log('액션로깅',action);
+    next(action)
+    console.log('액션끝',action);
+}
+
+
+const enhancer = applyMiddleware(firstMiddleware);
+
+const store = createStore(reducer, initialState, enhancer);
+
+
+
+
+// 함수로 변수값 받아서 액션 생성. 크리에이티브 액션.
+console.log('1', store.getState());
+store.dispatch(logIn({
+    id : 1,
+    name:'zerocho',
+    admin : true,
+}));
+console.log('2', store.getState());
+
+store.dispatch(addPost({
+    userId:1,
+    id : 1,
+    content : '안녕허세요. 리덕스'
+}));
+console.log('3', store.getState());
+store.dispatch(addPost({
+    userId:1,
+    id : 2,
+    content : '안녕허세요. 리덕스2'
+}));
+console.log('4', store.getState());
+store.dispatch(logOut())
+console.log('5', store.getState());
+
+// 자기자신안에서만 쓰이는 건, state 쓰고, 부모-자식간까지만 state 쓴다.
+
+------
+

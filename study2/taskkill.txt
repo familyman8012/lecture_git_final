@@ -1,0 +1,23 @@
+netstat
+
+: 실행중인 port 찾기
+
+
+
+
+
+netstat -a -o 
+
+: 실행중인 port 표시, 프로세스id(pid) 표시
+
+
+
+
+
+taskkill /f /pid 1234
+
+: 1234 프로세스id(pid) kill하기
+
+
+
+출처: https://killohotel.tistory.com/entry/window-port-죽이기 [박학다식]

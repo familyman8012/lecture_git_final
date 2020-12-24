@@ -1,0 +1,162 @@
+function UserGreeting(props) {
+  return <h1>Welcome Back!</h1>
+}
+
+function GuestGreeing(props) {
+  return <h1>Please sing up.</h1>
+}
+
+function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn;
+  if (isLoggedIn) {
+    return <UserGreeting />;
+  }
+  return <GuestGreeing />;
+}
+
+function GreetingEl() {
+  return (
+    <>
+       <Greeting isLoggedIn={true} />
+    </>
+  );
+}
+ 
+
+export default GreetingEl;
+
+----------------
+
+import React from 'react'
+
+function UserGreeting(props) {
+  return <h1>Welcome Back!</h1>
+}
+
+function GuestGreeing(props) {
+  return <h1>Please sing up.</h1>
+}
+
+function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn;
+  if (isLoggedIn) {
+    return <UserGreeting />;
+  }
+  return <GuestGreeing />;
+}
+
+
+
+function LoginButton(props) {
+  return (
+    <button onClick={props.onClick}>
+      Login
+    </button>
+  );
+}
+
+function LogoutButton(props) {
+  return (
+    <button onClick={props.onClick}>
+      Logout
+    </button>
+  );
+}
+
+
+class LoginControl extends React.Component {
+  constructor(props) {
+    super(props);
+    this.LoginClick = this.LoginClick.bind(this);
+    this.LogOutClick = this.LogOutClick.bind(this);
+    this.state = {isLoggedIn: false}
+  }
+  LoginClick() {
+    this.setState({isLoggedIn: true});    
+  }
+  LogOutClick() {
+    this.setState({isLoggedIn:false})
+  }
+  render() {
+    const isLoggedIn = this.state.isLoggedIn;
+    let button;
+    if (isLoggedIn) {
+      button = <LogoutButton onClick={this.LogOutClick} />;
+    } else {
+      button = <LoginButton onClick={this.LoginClick} />
+    }
+    return (
+      <div>
+        <Greeting isLoggedIn={isLoggedIn} />
+        {button}
+      </div> 
+    )
+  }
+}
+
+export default  LoginControl
+
+--------
+&& 사용법
+
+import React from 'react'
+
+function Mailbox(props) {
+  const unreadMessages = props.unreadMessages;
+  return (
+    <div>
+      sadsad
+      {unreadMessages.length > 0 && <h2>You have {unreadMessages.length} unread messages.</h2>}
+    </div>
+  )
+}
+
+const messages = ['React', 'Re: React', 'Re:Re: React'];
+function Mailboxout() {
+  const isOn = true;
+  return (
+    <>
+      <Mailbox unreadMessages={messages} />
+      <div>{isOn ? '트루' : '팰스'}</div>
+    </>
+  );
+}
+
+
+export default Mailboxout
+-----------
+
+import React from 'react'
+function WarningBanner(props) {
+  if (!props.warn) {
+    return null;
+  }
+  return (
+    <div className="warning">Warning!</div>
+  )
+}
+
+class Page extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {showWarning: true};
+    this.ToggleClick = this.ToggleClick.bind(this);
+  }
+  ToggleClick() {
+    this.setState(state => ({
+      showWarning : !state.showWarning
+    }))
+  }
+  render() {
+    return(
+      <div>
+        <WarningBanner warn={this.state.showWarning} />
+        <button onClick={this.ToggleClick}>
+          {this.state.showWarning ? 'Hide':'Show'}
+        </button>
+      </div>
+    )
+  }
+}
+
+export default Page;

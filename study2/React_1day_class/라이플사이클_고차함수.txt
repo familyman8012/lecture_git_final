@@ -1,0 +1,34 @@
+1) <button id="rock" className="btn" onClick={() => this.onClickBtn('바위')}>바위</button>
+
+를
+
+2) <button id="rock" className="btn" onClick={this.onClickBtn('바위')}>바위</button>
+
+로 바꾸고.
+
+
+이것을 아래와 같이 반영할 수 있다.
+
+onClickBtn = (choice) => {
+        const {imgCoord} = this.state
+        clearInterval(this.interval);
+         ... 생략
+
+
+를
+
+onClickBtn = (choice) => () => {
+        const {imgCoord} = this.state
+        clearInterval(this.interval);
+         ... 생략
+
+로 바꿔 반영.
+
+<button id="rock" className="btn" onClick={(e) => this.onClickBtn('바위')}>바위</button>
+
+<button id="rock" className="btn" onClick={this.onClickBtn('바위')}>바위</button>
+onClickBtn = (choice) => (e) => { 
+e.prevent.default();
+        const {imgCoord} = this.state
+        clearInterval(this.interval);
+         ... 생략

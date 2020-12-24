@@ -1,0 +1,51 @@
+shouldComponentUpdate(nextProps, nextState, nextContext) {
+        if (this.state.counter !== nextState.counter) {
+            return true;
+        }
+        return false;
+    }
+
+
+import React, { PureComponent} from 'react';
+class Test  extends PureComponent {
+
+
+PureComponent 도
+
+stat = {
+	 object : {},
+        array: []
+}
+
+
+object, array 참조 관계는 어려워함.
+
+this.setState({
+            array : []
+        });
+
+다시 랜더링됨.
+
+this.setState({
+            array : [...this.state.array,1]
+        });
+
+
+하지말아야하는 것.
+
+const array = this.state.array;
+array.push(4);
+
+
+PureComponent 와 shouldComponentUpdate => memo 
+
+const Try = memo(({tryInfo}) => {
+    return (
+        <li>
+            <div>{tryInfo.try}</div>
+            <div>{tryInfo.result}</div>
+        </li>
+    )
+})
+
+메모로 감싸주면 됨

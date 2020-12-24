@@ -1,0 +1,310 @@
+폴더나누기.
+
+보통 action 과 reducer 부분이 길어짐.
+그래서 폴더를 만듬
+
+
+redux /
+  - actions
+  - reducer
+
+action > 
+
+const logIn = (data) => {
+    return{ // 액션
+        type: 'LOG_IN',
+        data
+    }
+}
+
+const logOut = () => {
+    return {
+        type: 'LOG_OUT',
+    }
+}
+
+module.exports = {
+    logIn,
+    logOut,
+};
+
+---------------
+reducer > 
+
+const reducer = (prevState, action) => {
+    switch (action.type) {
+        case 'LOG_IN' : 
+            return {
+                ...prevState,
+                user : action.data,
+            }
+        case 'LOG_OUT' :
+            return {
+                ...prevState,
+                user : null,
+            }
+        case 'ADD_POST' :
+            return {
+                ...prevState,
+                posts : [...prevState.posts, action.data],
+            }
+        default:
+            return prevState;
+    }
+};
+
+module.exports = reducer;
+
+=>
+
+const reducer = require('./reducer');
+const {addPost} = require('./actions/post');
+const {logIn, logOut} = require('./actions/user');
+
+=> 구분하면서, 각 action폴더와 reducer 폴더내에서도 user 부분과 post 부분을 구분해서 나눔.
+
+------------
+
+리액트에서는
+
+const initialState = {
+    user: {
+        isLoggingIn: true,
+        data: null
+    },    
+    posts:[],
+    comments : [],
+    favorites : [],
+    history : [],
+    likes : [],
+    followeres : []
+}
+이 구조를 나누는게 가장 중요함
+
+-----------
+
+reducer 나누기. (combineReducers)
+
+const {combineReducers} = require('redux');
+const userReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'LOG_IN' : 
+            return {
+                ...prevState,
+                user : action.data,
+            }
+        case 'LOG_OUT' :
+            return {
+                ...prevState,
+                user : null,
+            }        
+        default:
+            return prevState;
+    }
+};
+
+const postReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'ADD_POST' :
+            return {
+                ...prevState,
+                posts : [...prevState.posts, action.data],
+            }
+        default:
+            return prevState;
+    }
+};
+
+
+
+module.exports = combineReducers({
+    user : userReducer,
+    posts : postReducer
+});
+
+=> 파일 2개로 나눔. user.js / post.js
+
+user.js
+
+const userReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'LOG_IN' : 
+            return {
+                ...prevState,
+                user : action.data,
+            }
+        case 'LOG_OUT' :
+            return {
+                ...prevState,
+                user : null,
+            }        
+        default:
+            return prevState;
+    }
+};
+
+module.exports = userReducer;
+
+post.js
+
+const postReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'ADD_POST' :
+            return {
+                ...prevState,
+                posts : [...prevState.posts, action.data],
+            }
+        default:
+            return prevState;
+    }
+};
+
+module.exports = postReducer;
+
+--> index.js 는 이렇게 수정
+
+const {combineReducers} = require('redux');
+const userReducer=require('./user');
+const postReducer=require('./post');
+
+
+
+module.exports = combineReducers({
+    user : userReducer,
+    posts : postReducer
+});
+
+=> 그런데, 나뉘면서 달라진점이 있음.
+
+post.js
+
+const postReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'ADD_POST' :
+            return {
+                ...prevState,
+                posts : [...prevState.posts, action.data],
+            }
+        default:
+            return prevState;
+    }
+};
+
+module.exports = postReducer;
+
+prevState  더이상 initialState 전체가 아님. 그중 posts : [], 이부분만.
+
+그래서.
+
+const postReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'ADD_POST' :
+            return {
+                ...prevState,
+                posts : [...prevState, action.data],
+            }
+        default:
+            return prevState;
+    }
+};
+
+이렇게 수정되고.
+
+user.js 역시 initalState 가 아니라, user : {isLoggingIn:true, data:null}  기때문에.
+
+const userReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'LOG_IN' : 
+            return {
+                ...prevState,
+                user : action.data,
+            }
+        case 'LOG_OUT' :
+            return {
+                ...prevState,
+                user : null,
+            }        
+        default:
+            return prevState;
+    }
+};
+
+module.exports = userReducer;
+
+=>
+
+
+const userReducer = (prevState, action) => {
+    switch (action.type) {
+        case 'LOG_IN' : 
+            return {
+                ...prevState,
+                data: action.data, (user 안에 있는 data)
+            }
+        case 'LOG_OUT' :
+            return {
+                ...prevState,
+                data: null,
+            }        
+        default:
+            return prevState;
+    }
+};
+
+module.exports = userReducer;
+
+--- 쪼개면서, 
+
+기본값을 넣어줘야함.
+
+user.js
+const initialState = {
+        isLoggingIn: true,
+        data: null
+    },   
+const userReducer = (prevState = initialState, action) => {
+
+post.js
+const initialState = [];
+const postReducer = (prevState = initialState, action) => { 
+
+-- 그리고 범위가.
+
+
+const initialState = {
+    user: {
+        isLoggingIn: true,
+        data: null
+    },    
+    posts:[],
+    comments : [],
+    favorites : [],
+    history : [],
+    likes : [],
+    followeres : []
+}
+
+이 부분과,
+
+{
+        isLoggingIn: true,
+        data: null
+    }
+
+이부분만 남으므로,
+
+[]
+
+
+post.js 에서
+
+ case 'ADD_POST' :
+            return {
+                posts : [...prevState, action.data]
+            }
+
+이게 아니라.
+
+ return [...prevState, action.data];
+
+이게 되야함.

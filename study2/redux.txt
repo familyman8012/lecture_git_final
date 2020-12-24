@@ -1,0 +1,192 @@
+const {createStore} = require('redux');
+
+const reducer = (prevState, action) => {
+    switch (action.type) {
+        // case 'CHANGE_COMP_A' : 
+        //     return {
+        //         compA : action.data,
+        //         compB : 12,
+        //         compC : null,
+        //     }
+        // case 'CHANGE_COMP_B' :
+        //     return {
+        //         compA : 'b',
+        //         compB : action.data,
+        //         compC : null,
+        //     }
+        case 'CHANGE_COMP_A' : 
+            return {
+                ...prevState,
+                compA : action.data,
+            }
+        case 'CHANGE_COMP_B' :
+            return {
+                ...prevState,
+                compB : action.data,
+            }
+        case 'CHANGE_COMP_C' :
+            return {
+                ...prevState,
+                compC : action.data,
+            }
+        default:
+            return prevState;
+    }
+};
+
+const initialState = {
+    compA : 'a',
+    compB : 12,
+    compC : null,
+}
+
+/* 불변성 */
+/* 중복을 어떻게 피할 수 있을까를 고민해라 
+const nextState = {
+    compA: action.data,
+    compB : 12,
+    compC : null
+}
+*/
+// 아래와 같이 쓰면 불병성을 유지하면서 새로운 객체를 내가 바꾸고 싶은 부분들만 바꿀 수 있다.
+// const nextState = {
+//     ...initialState,
+//     compA: action.data,
+// }
+
+
+const store = createStore(reducer, initialState);
+store.subscribe(() => { //react-redux 안에 들어있다. // 거의 안씀.
+    console.log('changed'); // 화면 바꿔주는 코드여기
+})
+console.log('1st', store.getState());
+
+
+// 함수로 변수값 받아서 액션 생성. 크리에이티브 액션.
+const ChangeCompA = (data) => {
+    return{ // 액션
+        type: 'CHANGE_COMP_A',
+        data
+    }
+}
+
+
+// type, data 가 명칭이 바뀔 수도 있다.
+// const ChangeCompA = (payload) => {
+//     return{ // 액션
+//         name: 'CHANGE_COMP_A',
+//         payload
+//     }
+// }
+
+// store.dispatch({
+//     type : 'CHANGE_COMP_A',
+//     data : 'b'
+// })
+store.dispatch(ChangeCompA('b'));
+// store.dispatch({
+//     type:'Change_COMP_A',
+//     data
+// })
+
+
+console.log('2nd', store.getState());
+
+/* 변경이 자유롭지 못하다.
+const aToB = {
+    type : 'CHANGE_COMP_A',
+    data : 'b'
+}
+
+*/
+
+
+const {createStore} = require('redux');
+
+const reducer = (prevState, action) => {
+    switch (action.type) {
+        case 'LOG_IN' : 
+            return {
+                ...prevState,
+                user : action.data,
+            }
+        case 'LOG_OUT' :
+            return {
+                ...prevState,
+                user : null,
+            }
+        case 'ADD_POST' :
+            return {
+                ...prevState,
+                posts : [...prevState.posts, action.data],
+            }
+        default:
+            return prevState;
+    }
+};
+
+/*
+
+const nextState = {
+    ...initialState,
+    posts:[{id:1}]
+}
+
+const nextState = {
+    ...initialState,
+    posts:[...initialState.posts, action.data]
+}
+*/
+const initialState = {
+    user:null,
+    posts:[]
+}
+const store = createStore(reducer, initialState);
+
+
+const logIn = (data) => {
+    return{ // 액션
+        type: 'LOG_IN',
+        data
+    }
+}
+
+const logOut = () => {
+    return {
+        type: 'LOG_OUT',
+    }
+}
+
+const addPost = (data) => {
+    return {
+        type : 'ADD_POST',
+        data
+    }
+}
+
+
+// 함수로 변수값 받아서 액션 생성. 크리에이티브 액션.
+console.log('1', store.getState());
+store.dispatch(logIn({
+    id : 1,
+    name:'zerocho',
+    admin : true,
+}));
+console.log('2', store.getState());
+
+store.dispatch(addPost({
+    userId:1,
+    id : 1,
+    content : '안녕허세요. 리덕스'
+}));
+console.log('3', store.getState());
+store.dispatch(addPost({
+    userId:1,
+    id : 2,
+    content : '안녕허세요. 리덕스2'
+}));
+console.log('4', store.getState());
+store.dispatch(logOut())
+console.log('5', store.getState());
+
+// 자기자신안에서만 쓰이는 건, state 쓰고, 부모-자식간까지만 state 쓴다.

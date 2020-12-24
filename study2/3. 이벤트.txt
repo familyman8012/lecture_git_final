@@ -1,0 +1,50 @@
+import React from 'react'
+
+class EvenExamplet extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {modalOn: true};
+    //this.handleClick = this.handleClick.bind(this);   ==> 이벤트 바인딩을 하기 위해서! 이것은 아래와 같이 화살표함수로 하면 해결됨.
+  }
+  handleClick = () => {
+    this.setState(state => ({
+      modalOn : !state.modalOn
+    }))
+  }
+  render() {
+    return (
+      <>
+      <button onClick={this.handleClick}> // 혹은 <button onClick={() => this.handleClick()}>   this.handleClick = this.handleClick.bind(this);를 대체.
+       dsadds
+      </button>
+      <div className={this.state.modalOn ? 'modal' : 'modal on'}> {this.state.modalOn ? 'ON' : 'OFF'}</div>
+      </>
+    )
+  }
+}
+
+
+export default EvenExamplet;
+
+
+함수형 useEffect 로 바꿨을때
+
+import React, { useState } from 'react'
+
+function EvenExamplet() {
+  const [ModalOn, setModalOn] = useState(true);
+  function handleClick() {
+    setModalOn(!ModalOn)
+  }
+  return (
+    <>
+    <button onClick={handleClick}>클릭</button>
+    <div className={ModalOn ? 'modal' : 'modal on'}> {ModalOn ? 'ON' : 'OFF'}</div>
+    </>
+  )
+
+
+}
+
+
+export default EvenExamplet;

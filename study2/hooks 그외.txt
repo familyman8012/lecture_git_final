@@ -1,0 +1,35 @@
+1)
+    const lottoNumbers = useMemo(() => getWinNumbers(),[]);
+    const [winNumbers, setWinNumbers] = useState(lottoNumbers);
+    const [winBalls, setWinBalls] = useState([]);
+    const [bonus,setBonus] = useState(null);
+    const [redo,setRedo] = useState(false);
+    const timeouts = useRef([]);
+
+이런 훅에 절대, if 문 쓰지마세요.
+
+2) useEffect 안에 useState 쓰지 마세요.
+
+3) 최상위로 빼라.
+
+componentDidMount 만 쓰고, componentDidUpdate 에서는 하기 싫다. 는
+
+
+useEffect(() => {
+ 생략...   
+}, [])
+
+이렇게 [] 하면 됨. 
+
+그런데 반대로!
+
+componentDidUpdate 만 쓰고, componentDidMount 에서는 하기 싫다. 는
+
+const mounted = useRef(false);
+useEffect(() => {
+   if(!mounted.current) {
+       mounted.current = true
+   } else {
+       // ajax 요청
+   }
+},[바뀌는값])

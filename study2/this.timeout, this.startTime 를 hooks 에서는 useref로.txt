@@ -1,0 +1,36 @@
+this.timeout = setTimeout(()=>{
+                setState('now');
+                setMessage('지금 클릭');
+                this.startTime = new Date();               
+            }, Math.floor(Math.random() * 1000) + 2000)
+
+this.endTime = new Date();
+
+
+=> 
+
+const timeOut = useRef(null);
+const startTime = useRef();
+const endTime = useRef();
+
+timeout.current = setTimeout(()=>{
+                setState('now');
+                setMessage('지금 클릭');
+                startTime.current = new Date();               
+            }, Math.floor(Math.random() * 1000) + 2000)
+
+endTime.current = new Date();
+
+useState 를 쓰는 순간, return 부분이 다시 동작.
+리랜더링되지 않도록 해야하기때문에,
+
+불필요한 랜더링은 막아야함. 
+랜더링 안할 변수는 이렇게 useRef 로 함.
+값이 바껴도 랜더링하고 싶지 않을때사용\
+
+화면이 안바뀌고, 기록됨.
+
+보통 timeout 이나 interval 
+
+화면을 바꾸고 싶지는 않지만, 값이 바뀌는 거.
+

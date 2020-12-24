@@ -1,0 +1,104 @@
+npm i immer
+case 'LOG_OUT' :
+            return {
+                ...prevState,
+                data : null,
+            }     
+
+=> 원래는.
+
+case 'LOG_OUT' :
+            state.data = null 
+
+이렇게 하는게 직관적일 것이다. 그런데 데이터의 불변성때문에
+...prevState 이렇게 해야한다.
+
+
+만약 깊게 들어간다면.
+
+state.deep.deeper.deepset.a = 'b' 이거 하나 하려고
+아래와 같이 들어가야한다.
+
+case 'LOG_OUT' :
+            return {
+                ...prevState,
+                data : null,
+                deep : {
+                    ...prevState.depp,
+                    deeper : {
+                        ...prevState.deeper,
+                        deepset : {
+                            ...prevState.deepset,
+                            a: 'b'
+                        }
+                    }
+                }
+            }  
+
+
+---
+
+const {produce} = require('immer');
+const userReducer = (prevState = initialState, action) => {
+    return produce(prevState, (draft) => {
+        switch (action.type) {
+        case 'LOG_IN_REQUEST' : 
+            draft.data = null;
+            draft.isLoggingIn = true;
+            break;            
+        case 'LOG_IN_SUCCESS' : 
+            draft.data = action.data;
+            draft.isLoggingIn = false;
+            break;
+        case 'LOG_IN_FAILURE' : 
+            draft.data = null;
+            draft.isLoggingIn = false;
+            break;         
+        case 'LOG_IN' : 
+            draft.data = action.data;
+            break;
+        case 'LOG_OUT' :
+            draft.data = null;
+            break;
+        default:
+            break;
+        }
+    })    
+};
+
+
+---------------
+const initialState = [];
+
+const postReducer = (prevState = initialState, action) => {
+    switch (action.type) {
+        case 'ADD_POST' :
+            return [...prevState, action.data];
+            
+        default:
+            return prevState;
+    }
+};
+
+module.exports = postReducer;
+
+=>
+
+const produce = require('immer');
+
+const initialState = [];
+
+const postReducer = (prevState = initialState, action) => {
+    return produce(prevState, (draft) => {
+        switch (action.type) {
+            case 'ADD_POST' :
+                draft.push(action.data);
+                break;                
+            default:
+                break;
+        }
+    })
+    
+};
+
+module.exports = postReducer;

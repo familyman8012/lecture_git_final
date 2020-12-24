@@ -1,0 +1,8 @@
+npx react-native start
+npx react-native run-android
+
+1) apk 추출
+
+1. npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/
+
+2. 안드로이드 스튜디오 build -> apk

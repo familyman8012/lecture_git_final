@@ -1,0 +1,15 @@
+
+onChangeInput() {} 과 onChangeInput = () => {} 의 차이.
+onChangeInput() {} 로 쓰면, 
+
+constructor(props) {
+	super(props);
+	this.state= {}
+	this.onChangeInput = this.onChangeInput.bind(this);
+}
+
+라는 걸 다 써야함.
+
+
+onChangeInput = () => {}  라고 쓰면, constructor, super,  this.onChangeInput.bind(this); 다 필요없음.
+this.state= {} 도 그냥 state = {} 로 뺄 수 있음.

@@ -1,0 +1,36 @@
+{this.state.result.length !== 0 && 
+                    <div>평균시간: {this.state.result.reduce((a,c) => a+c ) / this.state.result.length}ms</div>
+                }   
+
+{this.state.result.length !== 0 ? 
+                  null :  <div>평균시간: {this.state.result.reduce((a,c) => a+c ) / this.state.result.length}ms</div>
+                }   
+=> 이렇게 함수로도 뺌.
+{this.renderAverage()}
+
+=> 
+
+리턴안에 이렇게 넣을수도 있지만, 너무 지저분.  => {this.renderAverage()} 이렇게 빼는게 낫다. 가장 좋은 건 자식 component 화 시키는 것.
+
+return(
+        <>
+            <div id="screen"
+                className={state}
+                onClick={onClickScreen}
+            >
+                {message}
+            </div>
+            {(() => {
+                if (result.length === 0) {
+                    return null;
+                } else {
+                    return 
+                    <>
+                        <div>평균시간: {result.reduce((a,c) => a+c ) / result.length}ms</div>
+                        <button onClick={onReset}>리셋</button>
+                    </>
+                }
+            })()}
+            {renderAverage()}                
+        </>
+    );

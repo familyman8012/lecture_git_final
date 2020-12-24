@@ -1,0 +1,31 @@
+npm i redux-devtools-extension -d
+
+store.js 에서
+const {createStore, applyMiddleware} = require('redux');
+const {composeWithDevTools} = require('redux-devtools-extension');  --> 이부분
+
+
+const enhancer = applyMiddleware(
+    firstMiddleware,
+    thunkMiddleware
+);
+
+=>
+
+const enhancer = composeWithDevTools(applyMiddleware(
+    firstMiddleware,
+    thunkMiddleware
+));
+
+
+상용버젼과 구분.
+
+const enhancer = process.env.NODE_ENV === 'production' ? 
+    compose(applyMiddleware(
+        firstMiddleware,
+        thunkMiddleware
+    )) : 
+    composeWithDevTools(applyMiddleware(
+        firstMiddleware,
+        thunkMiddleware
+    ))

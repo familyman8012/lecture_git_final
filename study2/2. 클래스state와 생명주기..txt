@@ -1,0 +1,82 @@
+클래스 state 
+
+1. 사용법, 구조. : 기본.
+
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {date: new Date()}
+  }
+  componentDidMount() {
+    this.timerID = setInterval(() => this.tick(), 1000)
+  }
+  componentWillUnmount() {
+    clearInterval(this.timerID)
+  }
+  tick() {
+    this.setState({
+      date : new Date()
+    })
+  }
+  render() {
+    return (
+      <div>
+        <h1>hello, world!</h1>
+        <h2>It is {this.state.date.toLocaleTimeString()}</h2>
+      </div>
+    )
+  }
+}
+
+눈여겨봐야하는 것. 그냥 위의 문법대로니 그대로 copy paste 해도 무방.
+
+
+2. 객체로 받으면, 새로갱신을 못하니, 함수처럼 받아라.
+
+// Wrong
+this.setState({
+   counter: this.state.counter + this.props.increment,
+});
+
+// Correct
+this.setState((state, props) => ({
+  counter: state.counter + props.increment
+}));
+
+
+3. state 가 하나만 있는게 아니라 여러개 있을텐데.
+
+// this.state 에 있는 것을 따로 따로 set 할 수 있음.
+// constructor(props) {
+//     super(props);
+//     this.state = {
+//       posts: [],
+//       comments: []
+//     };
+//   }
+
+post 값 따로 받고, comments 값 따로 받을 수 있다.
+
+ex)
+
+// componentDidMount() {
+//     fetchPosts().then(response => {
+//       this.setState({
+//         posts: response.posts
+//       });
+//     });
+
+//     fetchComments().then(response => {
+//       this.setState({
+//         comments: response.comments
+//       });
+//     });
+//   }
+
+
+4. props 로 this.state 도 가능하니 그렇게 전달해라.
+
+<FormattedDate date={this.state.date} /> 
+function FormattedDate(props) {
+  return <h2>It is {props.date.toLocaleTimeString()}.</h2>;
+}

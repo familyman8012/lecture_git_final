@@ -1,0 +1,117 @@
+1. basic
+
+import React, {Component} from 'react';
+import {
+  StyleSheet,
+  View,
+  Animated,
+  Button
+} from 'react-native'
+
+export default class App2 extends Component {
+  marginTop = new Animated.Value(20);
+  animate = () => {
+    Animated.timing(
+      this.marginTop,
+      {
+        toValue:200,
+        duration: 500
+      }
+    ).start();
+  }
+    render() {
+      return (
+        <View style={styles.container}>
+          <Button title="Animate Box" onPress={this.animate} />
+          <Animated.View style={[styles.box, {marginTop : this.marginTop}]} />
+        </View>
+      )
+    }
+  }
+const styles = StyleSheet.create({
+  container : {
+    flex : 1,
+    padding:10,
+    paddingTop : 50
+  },
+  box : {
+    width:150,
+    height:150,
+    backgroundColor : 'red'
+  }
+})
+
+
+
+2. inputRange, outputRange, interpolate. 
+
+import React, {Component} from 'react';
+import {
+  Easing,
+  StyleSheet,
+  View,
+  Animated,
+  Button,
+  Text
+} from 'react-native';
+
+const styles = StyleSheet.create({
+  container : {
+    flex : 1,
+    justifyContent : 'center',
+    alignItems : 'center',
+    padding: 10,
+    paddingTop : 50
+  },
+  input : {
+    height:50,
+    marginHorizontal : 15,
+    backgroundColor : '#ededed',
+    marginTop : 10,
+    paddingHorizontal : 9
+  }
+  
+})
+export default class App extends Component {
+  state = {
+    loading: true
+  }
+  componentDidMount() {
+    this.animate();
+    setTimeout(() => this.setState({loading:false}), 2000)
+  }
+  animatedRotation = new Animated.Value(0);
+  animate = () => {
+    Animated.loop(
+      Animated.timing(
+        this.animatedRotation,
+        {
+          toValue : 1,
+          duration : 1800,
+          easing : Easing.linear
+        }
+      )
+    ).start()
+  }
+  render() {
+    const rotation = this.animatedRotation.interpolate({
+      inputRange : [0, 1],
+      outputRange : ['0deg', '360deg']
+    })
+    const { loading } = this.state;
+    return (
+      <View style={styles.container}>
+        {
+          loading ? ( <Animated.Image source={require('./assets/123.png')} style={{ width:90, height:90, transform : [{rotate : rotation}]}} />)
+          : (
+            <Text>Welcome</Text>
+          )
+        } 
+      </View>
+    )
+  }
+  
+}
+
+
+

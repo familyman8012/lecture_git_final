@@ -1,0 +1,64 @@
+class 방식
+
+
+1. 
+
+this.props.tryInfo.try
+this.props.tryInfo.result
+
+=> 
+
+2.
+const {tryInfo} = this.props
+tryInfo.try
+tryInfo.result 
+
+
+hook 방식
+
+const try = (props) => {
+	return(
+	<li>
+            <div>{props.tryInfo.try}</div>
+            <div>{props.tryInfo.result}</div>
+        	</li>
+	);
+}
+
+보통이렇게 많이쓴다. 구조분해방식으로.
+const try = ({tryInfo}) => {
+	return (
+
+         <li>
+            <div>{tryInfo.try}</div>
+            <div>{tryInfo.result}</div>
+        </li>
+       )
+}
+
+const Try = memo(({tryInfo}) => {
+tryInfo.try = 'hello' <-- 이럼 안됨. 원칙임. 부모가 바꿔줘야함.
+    return (
+        <li>
+            <div>{tryInfo.try}</div>
+            <div>{tryInfo.result}</div>
+        </li>
+    )
+})
+
+그래서 먼저 useState 를 해줘야함.
+
+import React, { PureComponent, memo, useState } from 'react';
+
+const Try = memo(({tryInfo}) => {
+    const [result, setResult] = useState(tryInfo.result);   --> 이렇게.
+    const onClick = () => {
+        setResult('1')
+    }
+    return (
+        <li>
+            <div>{tryInfo.try}</div>
+            <div onClick={onClick}>{tryInfo.result}</div>
+        </li>
+    )
+})

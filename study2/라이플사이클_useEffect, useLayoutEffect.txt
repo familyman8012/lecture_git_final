@@ -1,0 +1,21 @@
+  useEffect(() => { // componentDidMount, componentDidUpdate 역할 (1대 1 대응은 아님.)
+        interval.current = setInterval(changeHand, 100);
+        return () => {//componentWillUnmount 역할
+            clearInterval(interval.current)
+        }
+    }, []) 
+
+=> 이러면 한번만 동작. closer 문제 (class함수에서도 변수를 외부에서 참조하면 클로저 걸리듯)
+
+=> 이렇게 수정.
+
+  useEffect(() => { // componentDidMount, componentDidUpdate 역할 (1대 1 대응은 아님.)
+        interval.current = setInterval(changeHand, 100);
+        return () => {//componentWillUnmount 역할
+            clearInterval(interval.current)
+        }
+    }, [imgCoord]) 
+
+
+
+useLayoutEffect 는 변경이 있기전.

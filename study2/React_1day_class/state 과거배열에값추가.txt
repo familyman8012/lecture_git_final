@@ -1,0 +1,20 @@
+클래스형 
+this.setState((prevState) => {
+                return{
+                    result:'홈런!',
+                    tries:[...prevState.tries, {try:value, result:'홈런!'}]
+                }
+            })
+
+함수형 xx => 이건 틀림.
+setTries((prevTries) => { 
+                return [...prevTries.tries, {try:value, result:'홈런!'}]
+            });    
+
+함수형 xx => 이렇게 tries 를 넣을 필요가 없음.
+setTries((prevTries) => { 
+                    return [...prevTries, {try:value, result:`${strike} 스트라이크, ${ball} 볼입니다.`}]
+                });
+
+
+이렇게 함수형으로 쓰는걸 1급 함수, 하이오더컴포넌트라 한다.

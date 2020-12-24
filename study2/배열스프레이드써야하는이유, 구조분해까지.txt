@@ -1,0 +1,70 @@
+배열 스프레이드는 원본배열과, 비교배열이 필요함.
+
+tries : [...this.state.tries, {try:this.state.value, result:`${strike} 스트라이크, ${ball} 볼입니다.`}],
+[...저장된값, 새로운값]
+
+  
+
+구조분해.
+
+render() {
+        return (
+            <>
+                <h1>{this.state.result}</h1>
+                <form onSubmit={this.onSubmitForm}>
+                    <input maxLength={4} value={this.state.value} onChange={this.onChangeInput} />
+                </form>
+                <div>시도 : {this.state.tries.length}</div>
+                <ul>
+                    {this.state.tries.map((v,i) => {
+                        return (
+                           <Try key={`${i+1}차 시도:`} tryInfo={v} />
+                        )
+                    })}
+                </ul>
+            </>
+        )
+    }
+
+=> 
+
+render() {
+        const {result, value, tries} = this.state
+        return (
+            <>
+                <h1>{result}</h1>
+                <form onSubmit={this.onSubmitForm}>
+                    <input maxLength={4} value={value} onChange={this.onChangeInput} />
+                </form>
+                <div>시도 : {tries.length}</div>
+                <ul>
+                    {tries.map((v,i) => {
+                        return (
+                           <Try key={`${i+1}차 시도:`} tryInfo={v} />
+                        )
+                    })}
+                </ul>
+            </>
+        )
+    }
+
+
+=>
+
+import React, { Component } from 'react';
+
+class Try extends Component {
+    render() {
+        const { tryInfo } = this.props
+        return(
+             <li>
+                 <div>{tryInfo.try}</div>
+                 <div>{tryInfo.result}</div>
+             </li>
+        )
+    }
+}
+
+export default Try;
+
+props 도 가능.

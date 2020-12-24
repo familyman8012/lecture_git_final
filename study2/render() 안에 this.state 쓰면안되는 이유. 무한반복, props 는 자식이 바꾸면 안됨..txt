@@ -1,0 +1,14 @@
+render() {
+ <-- 이 안에 this.setState({}); 
+}
+를 쓰면, 렌더를 props 값이 바뀌거나, state 값이 바뀔땐데, 계속 재동작해서 오류.
+
+const Try = memo(({tryInfo}) => {
+tryInfo.try = 'hello' <-- 이럼 안됨. 원칙임. 부모가 바꿔줘야함.
+    return (
+        <li>
+            <div>{tryInfo.try}</div>
+            <div>{tryInfo.result}</div>
+        </li>
+    )
+})

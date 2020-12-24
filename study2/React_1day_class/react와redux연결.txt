@@ -1,0 +1,126 @@
+client.jsx 에
+
+1. index2.js 를 store.js 로 바꿔준다.
+
+2. 
+import React from 'react';
+import ReactDom from 'react-dom';
+import {hot} from 'react-hot-loader/root';
+
+import App from './App';
+
+
+const Hot = hot(App);
+
+//ReactDom.render(<GuGuDan />, document.querySelector('#root'));
+ReactDom.render(<Hot />, document.querySelector('#root'));
+
+=>
+
+
+import React from 'react';
+import ReactDom from 'react-dom';
+import {hot} from 'react-hot-loader/root';
+import {Provider} from 'react-redux';
+import store from './store';
+
+import App from './App';
+
+
+const Hot = hot(App);
+
+//ReactDom.render(<GuGuDan />, document.querySelector('#root'));
+ReactDom.render(
+    <Provider store={store}>    
+        <Hot />
+    </Provider>, 
+    document.querySelector('#root')
+);
+
+
+Provider(리액트리덕스) 로 <Hot> 감싸고(리액트).
+Provider(리액트리덕스) 에 store 연결.
+
+---------
+
+사용법 app.jsx
+
+import React, {useCallback} from 'react'
+import {useDispatch, useSelector} from 'react-redux';
+const { logIn, logOut } = require('./actions/user')
+
+function App() {
+    const user = useSelector((state) => state.user);
+    //const posts = useSelector((state) => state.posts);
+    const dispatch = useDispatch()
+    const onClick = useCallback(() => {
+        dispatch(logIn({
+            id: 'zerocho',
+            password : '비밀번호'
+        }))
+    },  [])
+    const onLogOut = useCallback(()=>{
+         dispatch(logOut());
+    }, [])
+
+    return (
+        <div>
+            {user.isLoggingIn 
+                ? <div>로그인중</div> 
+                : user.data
+                ? <div>{user.data.nickname}</div> 
+                : '로그인해주세요.'}
+            {!user.data ? <button onClick={onClick}>로그인</button>
+            :<button onClick={onLogOut}>로그아웃</button>}
+        </div>
+    )
+}
+
+export default App
+
+
+-----
+
+class 형
+
+import React from 'react'
+import {connect} from 'react-redux';
+const { logIn, logOut } = require('./actions/user')
+
+class App {
+    onClick = () => {
+        this.props.dispatchLogIn({
+            id: 'zerocho',
+            password : '비밀번호'
+        })
+    }
+    onLogout = () => {
+        this.props.dispatchLogOut(logOut());
+    }
+    render() {
+        const {user} = this.props;
+        return (
+            <div>
+                {user.isLoggingIn 
+                    ? <div>로그인중</div> 
+                    : user.data
+                    ? <div>{user.data.nickname}</div> 
+                    : '로그인해주세요.'}
+                {!user.data ? <button onClick={this.onClick}>로그인</button>
+                :<button onClick={this.onLogOut}>로그아웃</button>}
+            </div>
+        )
+    }
+}
+
+// const user = useSelector((state) => state.user);
+const mapStateToProps = (state) => ({
+    user : state.user,
+}) //reselect
+
+const mapDispatchToProps = (dispatch) => ({
+    dispatchLogIn : (data) => dispatch(logIn(data)),
+    dispatchLogOut: () => dispatch(logOut()),
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

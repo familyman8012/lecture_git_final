@@ -1,0 +1,84 @@
+const [winner, setWinner] = useState('');
+const [turn, setTurn] = useState('O');
+const [tableData, setTableData] = useState([['','',''], ['','',''], ['','','']])
+
+
+useState 를 하나로 묶어줄 수 있음. 
+
+
+import React, {useState, useCallback, useReducer} from 'react'
+import Table from './Table'
+
+const initialState = {
+    winner: '',
+    turn:'0',
+    tableData : [['','',''], ['','',''], ['','','']]
+}
+
+const SET_WINNER = 'SET_WINNER';
+
+const reducer = (state, action) => {
+    switch(action.type) {
+        case SET_WINNER :
+        // state.winner = action.winner 직접바꾸면 안됨. 이렇게 바꾸면 안된다.
+        return {
+            ...state,  // 얕게 복사를 하고.
+            winner : action.winner // 바뀌는 부분만 이렇게 바꿈.
+        }
+    }
+}
+
+
+
+const TicTacToe = () => {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const onClickTable = useCallback(() => { 
+        dispatch({type:'SET_WINNER', winner:'O'})
+    }, [])
+    return (
+        <>
+        <Table onClick={onClickTable}  />
+        {state.winner && <div>{state.winner}님의 승리</div>}
+        </>
+    )
+}
+
+export default TicTacToe
+
+
+
+순서.
+
+1) 
+const [state, dispatch] = useReducer(reducer, initialState); (선언)
+
+2) state.winner 이런식으로 state를 달아줌.
+{state.winner && <div>{state.winner}님의 승리</div>}
+
+3) 초기값 설정
+const initialState = {
+    winner: '',
+    turn:'0',
+    tableData : [['','',''], ['','',''], ['','','']]
+}
+
+4) 이벤트 설정 - 이벤트에 dispatch (dispatch 안의 {} 이 action. action에는 type과 변경예정값설정)
+
+const onClickTable = useCallback(() => { 
+    dispatch({type:'SET_WINNER', winner:'O'})
+}, [])
+
+
+5) const SET_WINNER = 'SET_WINNER'; 이렇게 상수로 빼줌.
+
+6)  dispatch 를 실행해줄 reducer 설정. dispatch 의 type 에 따라, switch 문의 case로 진행.
+const reducer = (state, action) => {
+    switch(action.type) {
+        case SET_WINNER :
+        // state.winner = action.winner 직접바꾸면 안됨. 이렇게 바꾸면 안된다.
+        return {
+            ...state,  // 얕게 복사를 하고.
+            winner : action.winner // 바뀌는 부분만 이렇게 바꿈.
+        }
+    }
+}
