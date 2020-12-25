@@ -1,0 +1,194 @@
+1. store.js 에서 reducers와 actions 분리.
+2. 각 reducers와 actions 분리는 용도에 맞게 분리. (ex : user.js, post.js)
+3. reducers 의 경우에는 분리하게 되면, 총 3가지 일을 해야함.
+
+1) 합쳐줘야함.
+
+- index.js (combineReducers)
+- user.js , post.js
+
+사용법 : reducers/ 폴더에 있는 index.js.
+
+const {combineReducers} = require('redux');
+const userReducer=require('./user');
+const postReducer=require('./post');
+
+module.exports = combineReducers({
+    user : userReducer,
+    posts : postReducer
+});
+
+----
+
+2) 각 user.js , post.js 에 initialState 값을 설정해줘야함.
+
+예시) 
+user.js
+const initialState = {
+    isLogin : true,
+    data : null
+}
+
+posts.js
+const initialState = []
+
+---
+
+3) prevState 범위가 각 해당하는 영역으로만 좁혀지기때문에. 변경.
+
+-----------------------------
+case 'ADD_POST' :
+            return {
+                ...prevState,
+                posts : [...prevState.posts, action.data],
+            }
+
+=> 
+
+case 'ADD_POST' :
+            return  [...prevState, action.data],
+
+----------------------
+
+case 'LOG_IN' : 
+            return {
+                ...prevState,
+                user : action.data,
+            }
+
+ case 'LOG_IN' : 
+            return {
+                ...prevState,
+                data: action.data, (user 안에 있는 data)
+            }
+-------------------
+
+
+4. store에서, 불러옴
+const reducer = require('./reducers');
+const {logIn, logOut} = require('./actions/user');
+
+
+5. 미들웨어 적용.
+const {createStore, applyMiddleware} = require('redux');
+
+const firstMiddleware = (store) => (next) => (action) => {
+    next(action)  // next가 dispatch 임.
+    console.log(action)
+}
+const enhancer = applyMiddleware(firstMiddleware);
+
+const store = createStore(reducer, initialState, enhancer);
+
+
+6. 비동기 (axios등) 을 위한 thunkMiddleWare 설치.
+
+const thunkMiddleware = (store) => (dispatch) => (action) => {
+    if (typeof action === 'function') { // 동기면 객체인데, 비동기면 function 을 넣어줄께. 비동기일때 진행.
+        return action(store.dispatch, store.getState)
+    }
+    return dispatch(action) // 리턴은 있어도 되고, 없어도 됨. 동기일때 진행.
+}
+
+const enhancer = applyMiddleware(
+    firstMiddleware,
+    thunkMiddleware
+);
+
+
+7. 비동기 thunkMidleWare에 맞는 Action 제작. (action 폴더의 user.js)
+const logIn = (data) => {
+    return (dispatch, getState) => {
+        dispatch(logInRequest(data));
+        try {
+            setTimeout(() => {
+                dispatch(logInSuccess({
+                    userId : data.nickname,
+                    nickname : data.password
+                }))
+            }, 2000)
+        } catch {
+            dispatch(logInFailure(e))
+        }       
+    }
+}
+const logInRequest = (data) => {
+    return {
+        type : 'LOG_IN_REQUEST',
+        data
+    }
+}
+const logInSuccess = (data) => {
+    return {
+        type : 'LOG_IN_SUCCESS',
+        data
+    }
+}
+const logInFailure = (data) => {
+    return {
+        type : 'LOG_IN_FAILURE',
+        data
+    }
+}
+
+
+8. 비동기 (axios) 등에 맞는 Reducer 제작 (reducer 폴더의 user.js)
+       case 'LOG_IN_REQUEST' : 
+            return {
+                ...prevState,
+                isLoggingIn : true
+            }
+        case 'LOG_IN_SUCCESS' : 
+            return {
+                ...prevState,
+                data : action.data,
+                isLoggingIn : false,
+            }
+        case 'LOG_IN_FAILURE' : 
+            return {
+                ...prevState,
+                data : null,
+                isLoggingIn : false,
+            }
+
+9. client.jsx 에 
+import {Provider} from 'react-redux';
+import store from './store';
+
+추가.
+ReactDom.render(
+    <Provider store={store}>    
+        <Hot />
+    </Provider>, 
+    document.querySelector('#root')
+);
+
+10. react 에서 사용하기.
+import React, {useCallback} from 'react'
+import {useDispatch, useSelector} from 'react-redux'
+const {logIn, logOut} = require('./actions/user')
+
+function Reactredux() {
+    const user = useSelector(state => state.user)
+    const dispatch = useDispatch();
+    const onClick = useCallback(()=>{
+        dispatch(logIn({
+            nickname:'클래시',
+            password:'비밀번호'
+        }))
+    })
+    const onLogOut = useCallback(() => {
+        dispatch(logOut());
+    })
+    return (
+        <div>
+            {user.isLogin ? <div>로그인 중</div>
+                :user.data ? <div>{user.data.nickname}{user.data.password}</div> : '로그인해주세요.'}
+            {!user.data ? <button onClick={onClick}>로그인</button> 
+            :<button onClick={onLogOut}>로그아웃</button>}
+        </div>
+    )
+}
+
+export default Reactredux
+

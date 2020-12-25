@@ -1,4 +1,4 @@
-import React, {useState, useRef, useCallback} from 'react'
+import React, {useState, useRef, useMemo, useCallback} from 'react'
 import Lifunction from './Lifunction'
 import Countbtn from './Countbtn'
 
@@ -19,7 +19,7 @@ function Ftemplate() {
     // const [calculation, setCalculation] = useState(CalculationTest()); // -> 예를 들면, 이렇게 하면, 계속 함수를 다시 실행함.
 
     const fastCalc = useMemo(() => CalculationTest(),[]); // -> 리턴값 기억.
-    const [calculation, setCalculation] = useState(fastCalc());
+    const [calculation, setCalculation] = useState(fastCalc);
 
 
    //const inputRef = React.useRef(null);
